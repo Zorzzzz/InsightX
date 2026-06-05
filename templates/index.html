@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightX - Home</title>
+    <link rel="icon" type="image/png" href="/static/favicon.jpg">
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo-container">
+            <img src="/static/favicon.jpg" class="bird-logo" alt="InsightX">
+            <span class="logo-text">InsightX</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/" class="active">🏠 Home</a></li>
+                <li><a href="/history">📜 Record</a></li>
+                {% if current_user.is_admin %}<li><a href="/admin">⚙️ Admin</a></li>{% endif %}<li><a href="/profile">👤 Profile</a></li>
+                <li><a href="#" onclick="doLogout()">🚪 Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="summarizer-container glass-card">
+            <h2>Summarize any document intelligently.</h2>
+            <textarea id="text-input" placeholder="Paste text here to summarize."></textarea>
+
+            <div class="btn-group">
+                <button class="summarize-btn" id="summarize-btn">
+                    <span class="btn-text">Summarize</span>
+                    <span class="loader" style="display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></span>
+                </button>
+            </div>
+
+            <div class="file-upload">
+                <div class="file-buttons">
+                    <button class="file-btn" title="PDF">
+                        <span>PDF</span>
+                    </button>
+                    <button class="file-btn" title="Word">
+                        <span>Word</span>
+                    </button>
+                    <button class="file-btn" title="Excel">
+                        <span>Excel</span>
+                    </button>
+                    <button class="file-btn" title="Text">
+                        <span>Text</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="results-container" style="display: none; margin-top: 3rem; text-align: left;">
+                <h3 style="color: var(--text-white); margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    Summary Results
+                </h3>
+                <div class="info-group" style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 24px; border: 1px solid var(--border-gray);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                        <span id="res-domain" style="display: flex; align-items: center; gap: 6px;">Domain: </span>
+                        <span id="res-confidence" style="display: flex; align-items: center; gap: 6px;">Confidence: </span>
+                        <span id="res-compression" style="display: flex; align-items: center; gap: 6px;">Compression: </span>
+                    </div>
+                    <p id="res-summary" style="font-size: 1.2rem; line-height: 1.9; margin-bottom: 2rem; color: #f8fafc; font-weight: 500;"></p>
+                    <div style="margin-top: 1.5rem; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                        <strong style="color: var(--accent-blue); display: block; margin-bottom: 0.5rem; font-size: 0.95rem;">Keywords Generated:</strong>
+                        <span id="res-keywords" style="color: var(--text-muted); font-weight: 600; line-height: 1.6;"></span>
+                    </div>
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.4); font-style: italic; text-align: center;" id="res-explanation"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-notification" class="toast">
+        <div class="toast-icon">!</div>
+        <div class="toast-content">
+            <h4 class="toast-title">Error</h4>
+            <p id="toast-message" class="toast-desc">Something went wrong.</p>
+        </div>
+        <button class="toast-close" onclick="closeToast()">x</button>
+    </div>
+
+    <script src="/static/script.js?v=12.0"></script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightX - Admin</title>
+    <link rel="icon" type="image/png" href="/static/favicon.jpg">
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        .admin-container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+        .admin-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+        .admin-subtitle { color: var(--text-muted, #aaa); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .user-table { width: 100%; border-collapse: collapse; }
+        .user-table th, .user-table td {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.9rem;
+        }
+        .user-table th { font-weight: 700; color: var(--text-muted, #aaa); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .user-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .badge-admin {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 0.72rem; font-weight: 700; background: rgba(59,130,246,0.15);
+            color: #60a5fa; border: 1px solid rgba(59,130,246,0.25);
+        }
+        .badge-user {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 0.72rem; font-weight: 700; background: rgba(255,255,255,0.05);
+            color: #9ca3af; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .action-btn {
+            padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05); color: #e5e7eb; margin-right: 6px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: rgba(255,255,255,0.12); }
+        .action-btn.danger { color: #f87171; border-color: rgba(248,113,113,0.3); }
+        .action-btn.danger:hover { background: rgba(248,113,113,0.1); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #1a1d2e; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px; padding: 2rem; width: 100%; max-width: 440px;
+        }
+        .modal-box h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; }
+        .modal-field { margin-bottom: 1.2rem; }
+        .modal-field label { display: block; font-size: 0.8rem; font-weight: 600; color: #9ca3af; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .modal-field input {
+            width: 100%; padding: 0.7rem 1rem; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+            color: #e5e7eb; font-size: 0.9rem; font-family: inherit; box-sizing: border-box;
+        }
+        .modal-field input:focus { outline: none; border-color: rgba(96,165,250,0.5); }
+        .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+        .modal-save { padding: 0.6rem 1.4rem; background: var(--primary-blue, #3b82f6); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+        .modal-save:hover { opacity: 0.9; }
+        .modal-cancel { padding: 0.6rem 1.2rem; background: transparent; color: #9ca3af; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+        .modal-cancel:hover { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="logo-container">
+            <img src="/static/favicon.jpg" class="bird-logo" alt="InsightX">
+            <span class="logo-text">InsightX</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/">🏠 Home</a></li>
+                <li><a href="/history">📜 Record</a></li>
+                <li><a href="/admin" class="active">⚙️ Admin</a></li>
+                <li><a href="/profile">👤 Profile</a></li>
+                <li><a href="#" onclick="doLogout()">🚪 Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="admin-container">
+            <div class="glass-card" style="padding: 2rem;">
+                <div class="admin-title">Admin Panel</div>
+                <div class="admin-subtitle">Manage all user accounts and access data.</div>
+
+                <table class="user-table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr id="row-{{ u.id }}">
+                            <td style="color:#6b7280;">{{ u.id }}</td>
+                            <td>{{ u.full_name or '—' }}</td>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                {% if u.is_admin %}
+                                <span class="badge-admin">Admin</span>
+                                {% else %}
+                                <span class="badge-user">User</span>
+                                {% endif %}
+                            </td>
+                            <td style="color:#6b7280;">{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <button class="action-btn"
+                                    onclick="openEditModal({{ u.id }}, '{{ u.full_name or '' }}', '{{ u.username }}', '{{ u.email }}')">
+                                    Edit
+                                </button>
+                                {% if not u.is_admin %}
+                                <button class="action-btn danger"
+                                    onclick="deleteUser({{ u.id }}, '{{ u.email }}')">
+                                    Delete
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h3 style="margin-top:30px">Summary Activity Logs</h3>
+                <table class="user-table" id="summary-table">
+                <thead><tr><th>User</th><th>File</th><th>Category</th><th>Date</th></tr></thead>
+                <tbody id="summary-body"></tbody></table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-box">
+            <h3>Edit User</h3>
+            <input type="hidden" id="edit-user-id">
+            <div class="modal-field">
+                <label>Full Name</label>
+                <input type="text" id="edit-full-name" placeholder="Full name">
+            </div>
+            <div class="modal-field">
+                <label>Username</label>
+                <input type="text" id="edit-username" placeholder="Username">
+            </div>
+            <div class="modal-field">
+                <label>Email</label>
+                <input type="email" id="edit-email" placeholder="Email">
+            </div>
+            <div class="modal-field">
+                <label>New Password <span style="font-weight:400;text-transform:none;color:#6b7280;">(leave blank to keep current)</span></label>
+                <input type="password" id="edit-password" placeholder="New password (min 6 chars)">
+            </div>
+            <div id="modal-error" style="display:none;color:#f87171;font-size:0.85rem;margin-top:0.5rem;"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+                <button class="modal-save" onclick="saveUser()">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast">
+        <div class="toast-icon">!</div>
+        <div class="toast-content">
+            <h4 class="toast-title">Error</h4>
+            <p id="toast-message" class="toast-desc">Something went wrong.</p>
+        </div>
+        <button class="toast-close" onclick="closeToast()">x</button>
+    </div>
+
+    <script src="/static/script.js?v=12.0">
+async function loadSummaries(){
+ const r=await fetch('/api/admin/summaries');
+ if(!r.ok) return;
+ const d=await r.json();
+ document.getElementById('summary-body').innerHTML=d.map(x=>
+ `<tr><td>${x.user}</td><td>${x.file_name||'-'}</td><td>${x.category||'-'}</td><td>${x.created_at}</td></tr>`).join('');
+}
+loadSummaries();
+</script>
+    <script>
+        function openEditModal(id, fullName, username, email) {
+            document.getElementById('edit-user-id').value = id;
+            document.getElementById('edit-full-name').value = fullName;
+            document.getElementById('edit-username').value = username;
+            document.getElementById('edit-email').value = email;
+            document.getElementById('edit-password').value = '';
+            document.getElementById('modal-error').style.display = 'none';
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        async function saveUser() {
+            const userId = document.getElementById('edit-user-id').value;
+            const payload = {
+                full_name: document.getElementById('edit-full-name').value.trim(),
+                username: document.getElementById('edit-username').value.trim(),
+                email: document.getElementById('edit-email').value.trim(),
+            };
+            const pw = document.getElementById('edit-password').value;
+            if (pw) payload.password = pw;
+
+            const errEl = document.getElementById('modal-error');
+            errEl.style.display = 'none';
+
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    errEl.textContent = data.error || 'Could not update user.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+                closeModal();
+                showError('User updated successfully!', true);
+                setTimeout(() => window.location.reload(), 1200);
+            } catch (e) {
+                errEl.textContent = 'Network error. Please try again.';
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function deleteUser(userId, email) {
+            if (!confirm(`Delete account "${email}"? This cannot be undone.`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) {
+                    showError(data.error || 'Could not delete user.');
+                    return;
+                }
+                document.getElementById(`row-${userId}`)?.remove();
+                showError('User deleted.', true);
+            } catch (e) {
+                showError('Network error. Please try again.');
+            }
+        }
+
+        // Close modal on overlay click
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

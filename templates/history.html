@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightX - History</title>
+    <link rel="icon" type="image/png" href="/static/favicon.jpg">
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo-container">
+            <img src="/static/favicon.jpg" class="bird-logo" alt="InsightX">
+            <span class="logo-text">InsightX</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/">🏠 Home</a></li>
+                <li><a href="/history" class="active">📜 Record</a></li>
+                {% if current_user.is_admin %}<li><a href="/admin">⚙️ Admin</a></li>{% endif %}<li><a href="/profile">👤 Profile</a></li>
+                <li><a href="#" onclick="doLogout()">🚪 Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="history-container glass-card">
+            <h2>Record of previous operations</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>File Name</th>
+                            <th>Type</th>
+                            <th>Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if records %}
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if record.file_name %}
+                                {{ record.file_name }}
+                                {% elif record.input_text %}
+                                {{ record.input_text[:40] }}{% if record.input_text|length > 40 %}...{% endif %}
+                                {% else %}
+                                Text input
+                                {% endif %}
+                            </td>
+                            <td>{{ record.category|title }}</td>
+                            <td>
+                                <div class="btn-group" style="margin-top: 0; justify-content: flex-start;"><button
+                                        type="button"
+                                        class="file-btn history-download-btn"
+                                        style="padding: 0.5rem 1rem; font-size: 0.85rem;"
+                                        data-filename='{{ (record.file_name or "summary") | tojson }}'
+                                        data-summary='{{ record.summary | tojson }}'
+                                    >
+                                        Download
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No operations recorded yet.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-notification" class="toast">
+        <div class="toast-icon">!</div>
+        <div class="toast-content">
+            <h4 class="toast-title">Error</h4>
+            <p id="toast-message" class="toast-desc">Something went wrong.</p>
+        </div>
+        <button class="toast-close" onclick="closeToast()">x</button>
+    </div>
+
+    <script src="/static/script.js?v=12.0"></script>
+</body>
+</html>

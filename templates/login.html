@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightX - Login</title>
+    <link rel="icon" type="image/png" href="/static/favicon.jpg">
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="/login" class="logo-container">
+            <img src="/static/favicon.jpg" class="bird-logo" alt="InsightX">
+            <span class="logo-text">InsightX</span>
+        </a>
+    </header>
+
+    <main>
+        <div class="login-container glass-card" style="max-width: 650px; width: 100%;">
+            <h2>Welcome back</h2>
+            <form id="login-form">
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="email" id="email-input" placeholder="Email" required>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="password" id="password-input" placeholder="Password" required>
+                </div>
+                <div id="auth-message" style="display: none; text-align: center; margin-bottom: 1rem; padding: 0.8rem; border-radius: 12px; font-weight: 600;"></div>
+                <button type="submit" id="login-btn" style="width: 100%;">
+                    <span class="btn-text">Login</span>
+                    <span class="loader" style="display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;"></span>
+                </button>
+            </form>
+
+            <div class="signup-link" style="text-align: center; margin-top: 2rem; font-size: 1rem;">
+                <p>Don't have an account? <a href="{{ url_for('register_page') }}" style="color: var(--primary-blue); font-weight: 800;">Register now</a></p>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-notification" class="toast">
+        <div class="toast-icon">!</div>
+        <div class="toast-content">
+            <h4 class="toast-title">Error</h4>
+            <p id="toast-message" class="toast-desc">Something went wrong.</p>
+        </div>
+        <button class="toast-close" onclick="closeToast()">x</button>
+    </div>
+
+    <script src="/static/script.js?v=12.0"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightX - Profile</title>
+    <link rel="icon" type="image/png" href="/static/favicon.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/static/style.css?v=12.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo-container">
+            <img src="/static/favicon.jpg" class="bird-logo" alt="InsightX">
+            <span class="logo-text">InsightX</span>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="/">🏠 Home</a></li>
+                <li><a href="/history">📜 Record</a></li>
+                
+                {% if current_user.is_admin %}<li><a href="/admin">⚙️ Admin</a></li>{% endif %}<li><a href="/profile" class="active">👤 Profile</a></li>
+                <li><a href="#" onclick="doLogout()">🚪 Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="profile-container glass-card">
+            <h2>Personal account settings</h2>
+            <div class="profile-info">
+                <div class="info-group">
+                    <label>Full Name</label>
+                    <p>{{ user.full_name or 'Not set' }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Username</label>
+                    <p>{{ user.username }}</p>
+                </div>
+                <div class="info-group">
+                    <label>Email</label>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+
+            
+<div class="btn-group">
+<p style="opacity:.8">User accounts are view-only. Only administrators can edit names, reset passwords, or delete accounts.</p>
+</div>
+</div>
+    </main>
+
+    <div id="toast-notification" class="toast">
+        <div class="toast-icon">!</div>
+        <div class="toast-content">
+            <h4 class="toast-title">Error</h4>
+            <p id="toast-message" class="toast-desc">Something went wrong.</p>
+        </div>
+        <button class="toast-close" onclick="closeToast()">x</button>
+    </div>
+
+    <script src="/static/script.js?v=12.0"></script>
+</body>
+</html>
